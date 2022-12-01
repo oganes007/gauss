@@ -1,0 +1,63 @@
+#include <iostream>
+
+
+using namespace std;
+int gauss(long double** a, long double* b, long double* x, const int n);
+int main() {
+    long double** a; long double* b; long double* x; int i, j, n;
+    cout << " input n = " << endl;
+    cin >> n;
+    try {
+        a = new long double* [n]; for (i = 0; i < n; i++) a[i] = new long double[n];
+        b = new long double[n]; x = new long double[n];
+    }
+    catch (...) { cout << "\nCould not allocate\n";  exit(-1); }
+    cout << "\n input matrix a \n";
+    for (i = 0; i < n; i++)for (j = 0; j < n; j++)cin >> a[i][j];
+    cout << "\n input vector b\n";
+    for (i = 0; i < n; i++)cin >> b[i];
+    cout << "\n matrix a: ";
+    for (i = 0; i < n; i++) { cout << "\n"; for (j = 0; j < n; j++) cout << "   " << a[i][j]; }
+    cout << "\n vector b: ";
+    for (i = 0; i < n; i++)cout << "\n " << b[i];
+    gauss(a, b, x, n);
+    cout << "\n vector x: ";
+    for (i = 0; i < n; i++)cout << "\n x[" << i << "] = " << x[i];
+    /*cout << "\n Press Key and Enter to continue";
+    cin >> i;   
+    for (i = 0; i < n; i++)delete[] a[i];*/
+    delete a;
+    delete[] b;
+    delete[] x;
+    return 0;
+}
+int gauss(long double** a, long double* b, long double* x, const int n) {
+    int i, k, m, im; long double amm, aim, r;
+    for (m = 0; m <= n - 2; m++) {
+        amm = a[m][m]; im = m;
+        for (i = m; i <= n - 1; i++)
+            if (a[i][m] > amm) { amm = a[i][m]; im = i; }
+        if (im != m) {
+            r = b[im]; b[im] = b[m]; b[m] = r;
+            for (k = m; k <= n - 1; k++)
+            {
+                r = a[im][k]; a[im][k] = a[m][k]; a[m][k] = r;
+            }
+        }
+        for (k = m; k <= n - 1; k++)a[m][k] = a[m][k] / amm; 
+        b[m] = b[m] / amm;                      
+        for (i = m + 1; i <= n - 1; i++) {
+            aim = a[i][m];
+            for (k = m; k <= n - 1; k++)
+                a[i][k] = a[i][k] - a[m][k] * aim; 
+            b[i] = b[i] - b[m] * aim;                  
+        }
+    }
+    x[n - 1] = b[n - 1] / a[n - 1][n - 1];            
+    for (i = n - 2; i >= 0; i--) {
+        x[i] = b[i];                         
+        for (k = i + 1; k < n; k++)           
+            x[i] = x[i] - a[i][k] * x[k];     
+    }
+    return 0;
+}
